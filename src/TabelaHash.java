@@ -97,7 +97,6 @@ public class TabelaHash{
         file.writeUTF(musicas.getEstilo());
         file.seek(index * 8);
         file.writeLong(newPointer); // Aqui o ponteiro na tabela Hash é atualizado
-
     }
 
     public void remover(Long id) {
@@ -156,7 +155,56 @@ public class TabelaHash{
         return musica;
     }
 
+    public void logInsere(long start, long end) {
+        long time = end - start;
+        String logMessage = "*** INSERE ***";
+        String logMessage2 = "Tempo de execução de INSERÇÃO > " + time + " milisegundos";
 
+        try {
+            PrintWriter writer = new PrintWriter(new FileOutputStream(new File("log.txt"), true));
+            writer.println(logMessage);
+            writer.println(logMessage2);
+            writer.close();
+        }
+        catch (FileNotFoundException e) {
+            System.out.println("\n***Erro ao escrever no arquivo de log.txt***");
+            System.out.println(e.getMessage());
+        }
+    }
+
+    public void logBusca(long start, long end) {
+        long time = end - start;
+        String logMessage = "*** BUSCA ***";
+        String logMessage2 = "Tempo de execução de BUSCA> " + time + " milisegundos";
+
+        try {
+            PrintWriter writer = new PrintWriter(new FileOutputStream(new File("log.txt"), true));
+            writer.println(logMessage);
+            writer.println(logMessage2);
+            writer.close();
+        }
+        catch (FileNotFoundException e) {
+            System.out.println("\n***Erro ao escrever no arquivo de log.txt***");
+            System.out.println(e.getMessage());
+        }
+    }
+
+    public void logRemove(long start, long end) {
+        long time = end - start;
+        String logMessage = "*** REMOVE ***";
+        String logMessage2 = "Tempo de execução > " + time + " milisegundos";
+
+        try {
+            PrintWriter writer = new PrintWriter(new FileOutputStream(new File("log.txt"), true));
+            writer.println(logMessage);
+            writer.println(logMessage2);
+            writer.close();
+        }
+        catch (FileNotFoundException e) {
+            System.out.println("\n***Erro ao escrever no arquivo de log.txt***");
+            System.out.println(e.getMessage());
+        }
+    }
 
 }
 
