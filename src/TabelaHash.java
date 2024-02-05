@@ -32,9 +32,9 @@ public class TabelaHash{
         for (long i = 1; i <= quant; i++) {
             Musicas musicas = new Musicas();
             musicas.setId(i);
-            musicas.setTitulo("Titulo " + i);
-            musicas.setArtista("Artista " + i);
-            musicas.setEstilo("Estilo " + i);
+            musicas.setTitulo("Heart-Shaped Box " + i);
+            musicas.setArtista("Nirvana " + i);
+            musicas.setEstilo("Grunge " + i);
             inserir(musicas);
         }
         System.out.println("Base de dados criada com sucesso");
@@ -116,32 +116,41 @@ public class TabelaHash{
     }
 
     public List<Musicas> lerMusicas() {
-    List<Musicas> musica = new ArrayList<>();
-    try {
-        file.seek(0);
-        while (file.getFilePointer() < file.length()) {
-            long pointer = file.readLong();
-            while (pointer != 0) {
-                file.seek(pointer);
-                long nextPointer = file.readLong();
-                long id = file.readLong();
-                String titulo = file.readUTF();
-                String artista = file.readUTF();
-                String estilo = file.readUTF();
-                Musicas musicas = new Musicas();
-                musicas.setId(id);
-                musicas.setTitulo(titulo);
-                musicas.setArtista(artista);
-                musicas.setEstilo(estilo);
-                musica.add(musicas);
-                pointer = nextPointer;
+        List<Musicas> musica = new ArrayList<>();
+        try {
+            file.seek(0);
+            while (file.getFilePointer() < file.length()) {
+                long pointer = file.readLong();
+                while (pointer != 0) {
+                    file.seek(pointer);
+                    if(file.getFilePointer() == file.length()) { // Se o ponteiro for o último da lista
+                        break;
+                    }
+                    long nextPointer = file.readLong();
+                    if(file.getFilePointer() == file.length()) { // Se o ponteiro for o último da lista
+                        break;
+                    }
+                    long id = file.readLong();
+                    String titulo = file.readUTF();
+                    String artista = file.readUTF();
+                    String estilo = file.readUTF();
+                    Musicas musicas = new Musicas();
+                    musicas.setId(id);
+                    musicas.setTitulo(titulo);
+                    musicas.setArtista(artista);
+                    musicas.setEstilo(estilo);
+                    musica.add(musicas);
+                    pointer = nextPointer;
+                }
             }
-        }
-    } catch (IOException e) {
-        e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }   
+        return musica;
     }
-    return musica;
-}
+
+
+
 }
 
 

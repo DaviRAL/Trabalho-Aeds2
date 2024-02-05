@@ -57,7 +57,13 @@ public class Musicas {
         this.artista = artista;
     }
 
-
+    @Override
+    public String toString() {
+        return "\nID > " + getId() + 
+        "\nTitulo > " + getTitulo() + 
+        "\nArtista > " + getArtista() + 
+        "\nEstilo > " + getEstilo();
+    }
 
 
 
