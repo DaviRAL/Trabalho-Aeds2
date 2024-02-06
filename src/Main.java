@@ -43,7 +43,7 @@ public class Main {
                 long endInsere = System.currentTimeMillis();
                 tabela.logInsere(startInsere, endInsere);
 
-                break;
+                break; 
 
             case 2:
                 System.out.println("\nDigite o id da musica que deseja buscar: ");
