@@ -28,6 +28,22 @@ public class TabelaHash{
         return (int) (id % tam);
     }
 
+    private int comparacoesBusca = 0;
+    private int comparacoesRemove = 0;
+    private int comparacoesInsere = 0;
+
+    public int getComparacoesBusca() {
+    return comparacoesBusca;
+    }
+
+    public int getComparacoesRemove() {
+    return comparacoesRemove;
+    }
+
+    public int getComparacoesInsere() {
+        return comparacoesInsere;
+    }
+
     public void PovoarMusicas(long quant) {
         try {
             for (long i = 1; i <= quant; i++) {
@@ -46,11 +62,14 @@ public class TabelaHash{
     }
 
     public Musicas buscar(Long id) {
+        long start = System.nanoTime();
+        int comparacoes = 0;
         try {
             int index = Hash(id);
             file.seek(index * 8);
             long pointer = file.readLong();
             while (pointer != 0) {
+                comparacoes++;
                 file.seek(pointer);
                 long nextPointer = file.readLong();
                 long movieId = file.readLong();
@@ -63,6 +82,8 @@ public class TabelaHash{
                     musicas.setTitulo(titulo);
                     musicas.setArtista(artista);
                     musicas.setEstilo(estilo);
+                    long end = System.nanoTime();
+                    logBusca(start, end, comparacoes);
                     return musicas;
                 }
                 pointer = nextPointer;
@@ -70,15 +91,19 @@ public class TabelaHash{
         } catch (IOException e) {
             e.getMessage();
         }
+        
         return null;
     }
 
     public void inserir(Musicas musicas) throws IOException{
+        long start = System.nanoTime();
         int index = Hash(musicas.getId());
         file.seek(index * 8); //pula o ponteiro para próxima musica(8 bytes)
         long pointer = file.readLong();
-
+        int comparacoes = 0;
+    
         while(pointer != 0) {
+            comparacoes++;
             file.seek(pointer + 8);
             long id = file.readLong();
             if (id == musicas.getId()) {
@@ -97,15 +122,22 @@ public class TabelaHash{
         file.writeUTF(musicas.getEstilo());
         file.seek(index * 8);
         file.writeLong(newPointer); // Aqui o ponteiro na tabela Hash é atualizado
+        long end = System.nanoTime();
+        logInsere(start, end, comparacoes);
+        
+
     }
+   
 
     public void remover(Long id) {
+        int comparacoes = 0;
         try {
             int index = Hash(id);
             file.seek(index * 8);
             long pointer = file.readLong();
             long previousPointer = -1;
             while (pointer != 0) {
+                comparacoes++;
                 file.seek(pointer);
                 long nextPointer = file.readLong();
                 long movieId = file.readLong();
@@ -155,15 +187,17 @@ public class TabelaHash{
         return musica;
     }
 
-    public void logInsere(long start, long end) {
+    public void logInsere(long start, long end, int comparacoes) {
         long time = end - start;
         String logMessage = "*** INSERE ***";
         String logMessage2 = "Tempo de execução de INSERÇÃO > " + time + " milisegundos";
-
+        String logMessage3 = "Número de comparações: " + comparacoes;
+    
         try {
             PrintWriter writer = new PrintWriter(new FileOutputStream(new File("log.txt"), true));
             writer.println(logMessage);
             writer.println(logMessage2);
+            writer.println(logMessage3);
             writer.close();
         }
         catch (FileNotFoundException e) {
@@ -172,15 +206,17 @@ public class TabelaHash{
         }
     }
 
-    public void logBusca(long start, long end) {
+    public void logBusca(long start, long end, int comparacoes) {
         long time = end - start;
         String logMessage = "*** BUSCA ***";
-        String logMessage2 = "Tempo de execução de BUSCA> " + time + " milisegundos";
-
+        String logMessage2 = "Tempo de execução de BUSCA > " + time + " milisegundos";
+        String logMessage3 = "Número de comparações: " + comparacoes;
+    
         try {
             PrintWriter writer = new PrintWriter(new FileOutputStream(new File("log.txt"), true));
             writer.println(logMessage);
             writer.println(logMessage2);
+            writer.println(logMessage3);
             writer.close();
         }
         catch (FileNotFoundException e) {
@@ -188,16 +224,17 @@ public class TabelaHash{
             System.out.println(e.getMessage());
         }
     }
-
-    public void logRemove(long start, long end) {
+    public void logRemove(long start, long end, int comparacoes) {
         long time = end - start;
         String logMessage = "*** REMOVE ***";
-        String logMessage2 = "Tempo de execução > " + time + " milisegundos";
-
+        String logMessage2 = "Tempo de execução de REMOÇÃO > " + time + " milisegundos";
+        String logMessage3 = "Número de comparações: " + comparacoes;
+    
         try {
             PrintWriter writer = new PrintWriter(new FileOutputStream(new File("log.txt"), true));
             writer.println(logMessage);
             writer.println(logMessage2);
+            writer.println(logMessage3);
             writer.close();
         }
         catch (FileNotFoundException e) {
@@ -205,7 +242,6 @@ public class TabelaHash{
             System.out.println(e.getMessage());
         }
     }
-
 }
 
 
