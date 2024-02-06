@@ -26,47 +26,52 @@ public class Main {
         switch (ax) {
 
             case 1:
-            
-            // Inserindo uma musica nova
-            System.out.println("\nDigite o id da musica que deseja inserir: ");
-            int id = leitor.nextInt();
-            Musicas newMusica = new Musicas(id, "Nutshell", "Grunge", "Alice in Chains");
-            try {
-                tabela.inserir(newMusica);
-                System.out.println("\n***Musica inserida com sucesso***");
-            }
-            catch(IOException e) {
-                System.out.println(e.getMessage());
-            }
-            
-        
-            break;
+                // Inserindo uma musica nova
+                System.out.println("\nDigite o id da musica que deseja inserir: ");
+                int id = leitor.nextInt();
+                Musicas newMusica = new Musicas(id, "Nutshell", "Grunge", "Alice in Chains");
+                long startInsere = System.nanoTime();
+                int comparacoesInsere = 0;
+
+                try {
+                    comparacoesInsere = tabela.inserir(newMusica);
+                    System.out.println("\n***Musica inserida com sucesso***");
+                }
+                catch(IOException e) {
+                    System.out.println(e.getMessage());
+                }
+                long endInsere = System.nanoTime();
+
+                tabela.logInsere(startInsere, endInsere, comparacoesInsere);
+
+                break;
 
             case 2:
                 System.out.println("\nDigite o id da musica que deseja buscar: ");
                 long b = leitor.nextInt();
-                Musicas music = tabela.buscar(b);
 
-                
+                long startBusca = System.nanoTime();
+                Musicas music = tabela.buscar(b);
+                long endBusca = System.nanoTime();
+
                 if (music != null) {
                     System.out.println("\n***Musica encontrada***" + music);
                 } else {
                     System.out.println("***ERRO! Musica nao encontrada***");
                 }
                 
-                
-               
+                int comparacoesBusca = tabela.getComparacoesBusca();
+                tabela.logBusca(startBusca, endBusca, comparacoesBusca);
 
                 break;
 
             case 3:
-            System.out.println("\nDigite o id da musica que deseja remover: ");
-            long startRemove = System.currentTimeMillis();
-            long c = leitor.nextInt();
-            tabela.remover(c);
-            long endRemove = System.currentTimeMillis();
-            int comparacoesRemove = tabela.getComparacoesRemove(); // Adicione esta linha
-            tabela.logRemove(startRemove, endRemove, comparacoesRemove); // Modifique esta linha
+                System.out.println("\nDigite o id da musica que deseja remover: ");
+                long startRemove = System.nanoTime();
+                long c = leitor.nextInt();
+                int comparacoesRemove = tabela.remover(c);
+                long endRemove = System.nanoTime();
+                tabela.logRemove(startRemove, endRemove, comparacoesRemove); 
 
             break;
                 
@@ -74,7 +79,7 @@ public class Main {
                 System.exit(0);
 
             default:
-                System.out.println("Opção inválida!");
+                System.out.println("***Opção inválida!***");
                 break;             
             }
         }
