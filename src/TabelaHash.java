@@ -1,15 +1,18 @@
-
-
-
 import java.io.*;
-import java.util.ArrayList;
-import java.util.List;
-
-
 public class TabelaHash{
     private RandomAccessFile file;
     private int tam;
 
+
+    private int comparacoesBusca = 0;
+
+    public int getComparacoesBusca() {
+        return comparacoesBusca;
+    }
+
+    private int Hash(Long id) {
+        return (int) (id % tam);
+    }
 
     public TabelaHash(int tam) {
         this.tam = tam;
@@ -22,16 +25,6 @@ public class TabelaHash{
         } catch (IOException e) {
             e.printStackTrace();
         }
-    }
-
-    private int Hash(Long id) {
-        return (int) (id % tam);
-    }
-
-    private int comparacoesBusca = 0;
-
-    public int getComparacoesBusca() {
-        return comparacoesBusca;
     }
 
     public void PovoarMusicas(long quant) {
@@ -111,10 +104,10 @@ public class TabelaHash{
 
         return comparacoes;
     }
-   
 
     public int remover(Long id) {
         int comparacoes = 0;
+        boolean idEncontrado = false;
         try {
             int index = Hash(id);
             file.seek(index * 8);
@@ -126,6 +119,7 @@ public class TabelaHash{
                 long nextPointer = file.readLong();
                 long movieId = file.readLong();
                 if (movieId == id) {
+                    idEncontrado = true;
                     if (previousPointer == -1) { // A musica no início da lista
                         file.seek(index * 8);
                         file.writeLong(nextPointer);
@@ -139,37 +133,42 @@ public class TabelaHash{
                 pointer = nextPointer;
             }
         } catch (IOException e) {
-            e.printStackTrace();
+            e.printStackTrace();   
+        }
+        if(idEncontrado) {
+            System.out.println("\n***Musica removida com sucesso!***");
+        }
+        else {
+            System.out.println("\n***ERRO! Musica nao encontrada para remover!***");
         }
         return comparacoes;
     }
 
-    public List<Musicas> lerMusicas() {
-        List<Musicas> musica = new ArrayList<>();
+    public void imprimirHash() {
         try {
-            file.seek(0);
-            while (file.getFilePointer() < file.length()) {
+            for (int i = 0; i < tam; i++) {
+                file.seek(i * 8);
                 long pointer = file.readLong();
-                while (pointer != 0) {
-                    file.seek(pointer);
-                    long nextPointer = file.readLong();
-                    long id = file.readLong();
-                    String titulo = file.readUTF();
-                    String artista = file.readUTF();
-                    String estilo = file.readUTF();
-                    Musicas musicas = new Musicas();
-                    musicas.setId(id);
-                    musicas.setTitulo(titulo);
-                    musicas.setArtista(artista);
-                    musicas.setEstilo(estilo);
-                    musica.add(musicas);
-                    pointer = nextPointer;
+    
+                if (pointer != 0) { //verifica se o ponteiro não é nulo(indice hash não vazio)
+                    System.out.printf("Hash Index %d | ", i);
+    
+                    while (pointer != 0) { 
+                        file.seek(pointer);
+                        long nextPointer = file.readLong();
+                        long id = file.readLong();
+                        String titulo = file.readUTF();
+                        String artista = file.readUTF();
+                        String estilo = file.readUTF();
+                        System.out.print("ID > " + id + ", Titulo > " + titulo + ", Artista > " + artista + ", Estilo > " + estilo);
+                        pointer = nextPointer;
+                    }
+                    System.out.println();
                 }
             }
         } catch (IOException e) {
             e.printStackTrace();
         }
-        return musica;
     }
 
     public void logInsere(long start, long end, int comparacoes) {
@@ -211,6 +210,7 @@ public class TabelaHash{
             System.out.println(e.getMessage());
         }
     }
+
     public void logRemove(long start, long end, int comparacoes) {
         long time = end - start;
         String logMessage = "*** REMOVE ***";
@@ -230,6 +230,7 @@ public class TabelaHash{
             System.out.println(e.getMessage());
         }
     }
+    
 }
 
 

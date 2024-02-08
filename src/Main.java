@@ -1,5 +1,4 @@
 import java.io.IOException;
-
 import java.util.Scanner;
 
 public class Main {
@@ -10,7 +9,7 @@ public class Main {
         System.out.println("Por favor, insira a quantidade de musicas da Tabela Hash: ");
         int aux = leitor.nextInt();
         TabelaHash tabela = new TabelaHash(aux);
-        tabela.PovoarMusicas(aux);
+        //tabela.PovoarMusicas(aux);
 
         while (true) {
         System.out.println("\n************************");
@@ -19,7 +18,8 @@ public class Main {
         System.out.println("1 - Inserir uma musica ");
         System.out.println("2 - Buscar uma musica");
         System.out.println("3 - Remover uma musica");
-        System.out.println("4 - Sair");
+        System.out.println("4 - Imprimir a tabela hash");
+        System.out.println("5 - Sair");
         System.out.println("************************\n");
         int ax = leitor.nextInt();
         
@@ -29,6 +29,7 @@ public class Main {
                 // Inserindo uma musica nova
                 System.out.println("\nDigite o id da musica que deseja inserir: ");
                 int id = leitor.nextInt();
+                
                 Musicas newMusica = new Musicas(id, "Nutshell", "Grunge", "Alice in Chains");
                 long startInsere = System.nanoTime();
                 int comparacoesInsere = 0;
@@ -74,8 +75,13 @@ public class Main {
                 tabela.logRemove(startRemove, endRemove, comparacoesRemove); 
 
             break;
-                
+
+
             case 4:
+                tabela.imprimirHash();
+                break;
+
+            case 5:
                 System.exit(0);
 
             default:
