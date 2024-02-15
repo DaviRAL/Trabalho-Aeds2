@@ -21,8 +21,6 @@ public class Musicas {
     public long getId() {
         return id;
     }
-
-
     public void setId(long i) {
         this.id = i;
     }
@@ -31,8 +29,6 @@ public class Musicas {
     public String getTitulo() {
         return titulo;
     }
-
-
     public void setTitulo(String titulo) {
         this.titulo = titulo;
     }
@@ -41,8 +37,6 @@ public class Musicas {
     public String getEstilo() {
         return estilo;
     }
-
-
     public void setEstilo(String estilo) {
         this.estilo = estilo;
     }
@@ -51,8 +45,6 @@ public class Musicas {
     public String getArtista() {
         return artista;
     }
-
-
     public void setArtista(String artista) {
         this.artista = artista;
     }
@@ -64,12 +56,4 @@ public class Musicas {
         "\nArtista > " + getArtista() + 
         "\nEstilo > " + getEstilo();
     }
-
-
-
-
-
-
-
-
 }

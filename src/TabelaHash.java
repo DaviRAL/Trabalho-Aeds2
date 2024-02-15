@@ -48,7 +48,7 @@ public class TabelaHash{
         try {
             int index = Hash(id);
             file.seek(index * 8);
-            long pointer = file.readLong();
+            long pointer = file.readLong(); //ponteiro para a primeira musica na lista
             while (pointer != 0) {
                 comparacoesBusca++;
                 file.seek(pointer);
@@ -58,7 +58,9 @@ public class TabelaHash{
                     String titulo = file.readUTF();
                     String artista = file.readUTF();
                     String estilo = file.readUTF();
+
                     Musicas musicas = new Musicas();
+
                     musicas.setId(id);
                     musicas.setTitulo(titulo);
                     musicas.setArtista(artista);
@@ -81,26 +83,26 @@ public class TabelaHash{
         long pointer = file.readLong();
         int comparacoes = 0;
     
-        while(pointer != 0) {
+        while(pointer != 0) { 
             comparacoes++;
             file.seek(pointer + 8);
             long id = file.readLong();
-            if (id == musicas.getId()) {
+            if (id == musicas.getId()) { 
                 throw new IOException("***ERRO! Musica com ID ja existente***");
             }
             file.seek(pointer);
             pointer = file.readLong();
         }
 
-        file.seek(file.length());
+        file.seek(file.length()); //ponteiro no final do arquivo
         long newPointer = file.getFilePointer();
-        file.writeLong(pointer); //A proxima musica que vem na lista
+        file.writeLong(pointer); //a proxima musica que vem na lista
         file.writeLong(musicas.getId());
         file.writeUTF(musicas.getTitulo());
         file.writeUTF(musicas.getArtista());
         file.writeUTF(musicas.getEstilo());
-        file.seek(index * 8);
-        file.writeLong(newPointer); //Aqui o ponteiro na tabela Hash é atualizado
+        file.seek(index * 8); //move de volta para o indice hash
+        file.writeLong(newPointer); //ponteiro na tabela Hash é atualizado para uma nova musica
 
         return comparacoes;
     }
@@ -120,10 +122,10 @@ public class TabelaHash{
                 long movieId = file.readLong();
                 if (movieId == id) {
                     idEncontrado = true;
-                    if (previousPointer == -1) { // A musica no início da lista
+                    if (previousPointer == -1) { //executada quando a musica a ser removida é a primeira da lista
                         file.seek(index * 8);
                         file.writeLong(nextPointer);
-                    } else { // A musica que está no meio ou no final da lista
+                    } else { //executada quando a musica a ser removida não é a primeira da lista
                         file.seek(previousPointer);
                         file.writeLong(nextPointer);
                     }
@@ -135,12 +137,14 @@ public class TabelaHash{
         } catch (IOException e) {
             e.printStackTrace();   
         }
+
         if(idEncontrado) {
             System.out.println("\n***Musica removida com sucesso!***");
         }
         else {
             System.out.println("\n***ERRO! Musica nao encontrada para remover!***");
         }
+
         return comparacoes;
     }
 
