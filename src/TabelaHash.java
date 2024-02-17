@@ -77,7 +77,6 @@ public class TabelaHash{
         return null;
     }
 
-
     public int inserir(Musicas musicas) throws IOException {
         int index = Hash(musicas.getId());
         file.seek(index * 8);
@@ -107,6 +106,8 @@ public class TabelaHash{
     
         return comparacoes;
     }
+    
+
     
 
     public int remover(Long id) {
@@ -150,25 +151,30 @@ public class TabelaHash{
         return comparacoes;
     }
 
-    
     public void imprimirHash() {
         try {
             for (int i = 0; i < tam; i++) {
                 file.seek(i * 8);
-                long pointer = file.readLong();
+                long hashPointer = file.readLong();
     
-                if (pointer != 0) { //verifica se o ponteiro não é nulo(indice hash não vazio)
+                if (hashPointer != 0) {
                     System.out.printf("Hash Index %d | ", i);
     
-                    while (pointer != 0) { 
-                        file.seek(pointer);
-                        long nextPointer = file.readLong();
+                    while (hashPointer != 0) {
+                        file.seek(hashPointer);
                         long id = file.readLong();
                         String titulo = file.readUTF();
                         String artista = file.readUTF();
                         String estilo = file.readUTF();
+    
                         System.out.print("ID > " + id + ", Titulo > " + titulo + ", Artista > " + artista + ", Estilo > " + estilo);
-                        pointer = nextPointer;
+    
+                        // Move para a próxima entrada na lista encadeada
+                        hashPointer = file.readLong();  // <-- Possível causa do EOFException
+    
+                        if (hashPointer != 0) {
+                            System.out.print(" -> ");
+                        }
                     }
                     System.out.println();
                 }
