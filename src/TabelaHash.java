@@ -77,35 +77,37 @@ public class TabelaHash{
         return null;
     }
 
-    public int inserir(Musicas musicas) throws IOException{
+
+    public int inserir(Musicas musicas) throws IOException {
         int index = Hash(musicas.getId());
-        file.seek(index * 8); //pula o ponteiro para próxima musica(8 bytes)
-        long pointer = file.readLong();
+        file.seek(index * 8);
+        long oldPointer = file.readLong();
         int comparacoes = 0;
     
-        while(pointer != 0) { 
+        while (oldPointer != 0) {
             comparacoes++;
-            file.seek(pointer + 8);
+            file.seek(oldPointer + 8);
             long id = file.readLong();
-            if (id == musicas.getId()) { 
-                throw new IOException("***ERRO! Musica com ID ja existente***");
+            if (id == musicas.getId()) {
+                throw new IOException("***ERRO! Musica com ID já existente***");
             }
-            file.seek(pointer);
-            pointer = file.readLong();
+            file.seek(oldPointer);
+            oldPointer = file.readLong();
         }
-
-        file.seek(file.length()); //ponteiro no final do arquivo
+    
+        file.seek(file.length());
         long newPointer = file.getFilePointer();
-        file.writeLong(pointer); //a proxima musica que vem na lista
+        file.writeLong(oldPointer);
         file.writeLong(musicas.getId());
         file.writeUTF(musicas.getTitulo());
         file.writeUTF(musicas.getArtista());
         file.writeUTF(musicas.getEstilo());
-        file.seek(index * 8); //move de volta para o indice hash
-        file.writeLong(newPointer); //ponteiro na tabela Hash é atualizado para uma nova musica
-
+        file.seek(index * 8);
+        file.writeLong(newPointer);
+    
         return comparacoes;
     }
+    
 
     public int remover(Long id) {
         int comparacoes = 0;
@@ -148,6 +150,7 @@ public class TabelaHash{
         return comparacoes;
     }
 
+    
     public void imprimirHash() {
         try {
             for (int i = 0; i < tam; i++) {
@@ -174,6 +177,7 @@ public class TabelaHash{
             e.printStackTrace();
         }
     }
+    
 
     public void logInsere(long start, long end, int comparacoes) {
         long time = end - start;

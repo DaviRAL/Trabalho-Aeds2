@@ -47,6 +47,7 @@ public class Main {
 
                 break;
 
+
             case 2:
                 System.out.println("\nDigite o id da musica que deseja buscar: ");
                 long b = leitor.nextInt();
@@ -66,6 +67,7 @@ public class Main {
 
                 break;
 
+
             case 3:
                 System.out.println("\nDigite o id da musica que deseja remover: ");
                 long startRemove = System.nanoTime();
@@ -74,18 +76,23 @@ public class Main {
                 long endRemove = System.nanoTime();
                 tabela.logRemove(startRemove, endRemove, comparacoesRemove); 
 
-            break;
+                break;
 
 
             case 4:
-                tabela.imprimirHash();
+                HashPrinter hashPrinter = new HashPrinter("HashMusicas.dat", aux);
+                hashPrinter.imprimirTabelaHash();
+                //tabela.imprimirHash();
+
                 break;
+
 
             case 5:
                 System.exit(0);
 
             default:
                 System.out.println("***Opção inválida!***");
+
                 break;             
             }
         }
