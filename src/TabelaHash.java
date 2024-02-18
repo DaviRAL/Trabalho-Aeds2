@@ -1,5 +1,6 @@
 import java.io.*;
-public class TabelaHash{
+public class TabelaHash {
+
     private RandomAccessFile file;
     private int tam;
 
@@ -79,37 +80,44 @@ public class TabelaHash{
 
     public int inserir(Musicas musicas) throws IOException {
         int index = Hash(musicas.getId());
-        file.seek(index * 8);
-        long oldPointer = file.readLong();
+        file.seek(index * 8); 
+        long pointer = file.readLong(); //lê o ponteiro para a primeira música na lista encadeada.
+        long lastPointer = 0;
         int comparacoes = 0;
     
-        while (oldPointer != 0) {
+        while (pointer != 0) { //
             comparacoes++;
-            file.seek(oldPointer + 8);
+            file.seek(pointer + 8);
             long id = file.readLong();
             if (id == musicas.getId()) {
                 throw new IOException("***ERRO! Musica com ID já existente***");
             }
-            file.seek(oldPointer);
-            oldPointer = file.readLong();
+            file.seek(pointer);
+            lastPointer = pointer;
+            pointer = file.readLong();
         }
     
         file.seek(file.length());
         long newPointer = file.getFilePointer();
-        file.writeLong(oldPointer);
+        file.writeLong(0); // A nova música é a última na lista, então seu ponteiro é 0
         file.writeLong(musicas.getId());
         file.writeUTF(musicas.getTitulo());
         file.writeUTF(musicas.getArtista());
         file.writeUTF(musicas.getEstilo());
-        file.seek(index * 8);
-        file.writeLong(newPointer);
+    
+        if (lastPointer != 0) {
+            // Se lastPointer não é 0, então nós precisamos atualizar o ponteiro na última música da lista
+            file.seek(lastPointer);
+            file.writeLong(newPointer);
+        } else {
+            // Se lastPointer ainda é 0, então a lista estava vazia e nós precisamos atualizar o ponteiro no índice hash
+            file.seek(index * 8);
+            file.writeLong(newPointer);
+        }
     
         return comparacoes;
     }
     
-
-    
-
     public int remover(Long id) {
         int comparacoes = 0;
         boolean idEncontrado = false;
@@ -184,6 +192,24 @@ public class TabelaHash{
         }
     }
     
+    public void imprimirHash2() throws IOException {
+        for (int i = 0; i < tam; i++) {
+            System.out.println("Index: " + i);
+            file.seek(i * 8);
+            long pointer = file.readLong();
+            while (pointer != 0) {
+                file.seek(pointer + 8);
+                long id = file.readLong();
+                String titulo = file.readUTF();
+                String artista = file.readUTF();
+                String estilo = file.readUTF();
+                System.out.println("ID: " + id + ", Titulo: " + titulo + ", Artista: " + artista + ", Estilo: " + estilo);
+                file.seek(pointer);
+                pointer = file.readLong();
+            }
+        }
+    }
+
 
     public void logInsere(long start, long end, int comparacoes) {
         long time = end - start;

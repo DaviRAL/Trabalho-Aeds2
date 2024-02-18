@@ -80,10 +80,10 @@ public class Main {
 
 
             case 4:
-                HashPrinter hashPrinter = new HashPrinter("HashMusicas.dat", aux);
-                hashPrinter.imprimirTabelaHash();
+                //HashPrinter hashPrinter = new HashPrinter("HashMusicas.dat", aux);
+                //hashPrinter.imprimirTabelaHash();
                 //tabela.imprimirHash();
-
+                tabela.imprimirHash2();
                 break;
 
 
@@ -98,4 +98,5 @@ public class Main {
         }
         
     }
+    
 }
