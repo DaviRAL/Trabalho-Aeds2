@@ -3,7 +3,7 @@ public class TabelaHash {
 
     private RandomAccessFile file;
     private int tam;
-
+    private int contador = 0;
 
     private int comparacoesBusca = 0;
 
@@ -78,7 +78,16 @@ public class TabelaHash {
         return null;
     }
 
+    public boolean estaCheia() {
+        return contador == tam;
+    }
+
     public int inserir(Musicas musicas) throws IOException {
+
+        if (estaCheia()) {
+            throw new IOException("\n***ERRO! A tabela hash está cheia!***");
+        }
+
         int index = Hash(musicas.getId());
         file.seek(index * 8); 
         long pointer = file.readLong(); //lê o ponteiro para a primeira música na lista encadeada.
@@ -90,7 +99,7 @@ public class TabelaHash {
             file.seek(pointer + 8);
             long id = file.readLong();
             if (id == musicas.getId()) {
-                throw new IOException("***ERRO! Musica com ID já existente***");
+                throw new IOException("\n***ERRO! Musica com ID já existente***");
             }
             file.seek(pointer);
             lastPointer = pointer;
@@ -114,7 +123,8 @@ public class TabelaHash {
             file.seek(index * 8);
             file.writeLong(newPointer);
         }
-    
+        
+        contador++;
         return comparacoes;
     }
     
@@ -159,42 +169,10 @@ public class TabelaHash {
         return comparacoes;
     }
 
-    public void imprimirHash() {
-        try {
-            for (int i = 0; i < tam; i++) {
-                file.seek(i * 8);
-                long hashPointer = file.readLong();
     
-                if (hashPointer != 0) {
-                    System.out.printf("Hash Index %d | ", i);
-    
-                    while (hashPointer != 0) {
-                        file.seek(hashPointer);
-                        long id = file.readLong();
-                        String titulo = file.readUTF();
-                        String artista = file.readUTF();
-                        String estilo = file.readUTF();
-    
-                        System.out.print("ID > " + id + ", Titulo > " + titulo + ", Artista > " + artista + ", Estilo > " + estilo);
-    
-                        // Move para a próxima entrada na lista encadeada
-                        hashPointer = file.readLong();  // <-- Possível causa do EOFException
-    
-                        if (hashPointer != 0) {
-                            System.out.print(" -> ");
-                        }
-                    }
-                    System.out.println();
-                }
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-    
-    public void imprimirHash2() throws IOException {
+    public void imprimirHash() throws IOException {
         for (int i = 0; i < tam; i++) {
-            System.out.println("Index: " + i);
+            System.out.println("---Hash Index " + i + "---");
             file.seek(i * 8);
             long pointer = file.readLong();
             while (pointer != 0) {
@@ -203,7 +181,7 @@ public class TabelaHash {
                 String titulo = file.readUTF();
                 String artista = file.readUTF();
                 String estilo = file.readUTF();
-                System.out.println("ID: " + id + ", Titulo: " + titulo + ", Artista: " + artista + ", Estilo: " + estilo);
+                System.out.println("\tID > " + id + ", Titulo > " + titulo + ", Artista > " + artista + ", Estilo > " + estilo);
                 file.seek(pointer);
                 pointer = file.readLong();
             }
